@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<!-- saved from url=(0093)http://s5.hekko.pl:2222/CMD_FILE_MANAGER/domains/dmgl.pl/public_html/michal/tetris/index.html -->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+
+    <title>TETRIS</title>
+
+    <style>
+        table {
+            /*border: 1px solid black;*/
+        }
+
+        body {
+            height: 100%;
+        }
+
+        td {
+            /*border: 1px solid black;*/
+            width: 30px;
+            height: 30px;
+
+        }
+
+        #content {
+            display: block;
+            width: 800px;
+            height: 750px;
+            position: absolute;
+            left: 350px;
+            background-color: #000033;
+        }
+
+        #gra {
+            top: 140px;
+            position: fixed;
+            left: 450px;
+            background-color: #ffffcc;
+        }
+
+        #menu {
+            height: 120px;
+            width: 200px;
+            top: 140px;
+            position: fixed;
+            left: 800px;
+            background-color: #ffffcc;
+            font-family: 'Courier New';
+            font-size: 20px;
+        }
+
+        #header {
+            height: 110px;
+            width: 700px;
+            top: 10px;
+            left: 50px;
+            position: absolute;
+            background-color: #ffffcc;
+            font-family: 'Courier New';
+        }
+
+        #img1 {
+            height: 90px;
+            top: 10px;
+            right: 10px;
+            position: absolute;
+        }
+
+        .popup {
+            height: 200px;
+            width: 400px;
+            background-color: #ffffcc;
+            border:solid 5px;
+        }
+
+        .sp1 {
+            height: 40px;
+            width: 400px;
+            background-color: #000033;
+            color: #ffffcc;
+            font-family: 'Courier New';
+            font-size: 20px;
+            text-align: right;
+        }
+
+        .sp2 {
+            color: #000033;
+            font-family: 'Courier New';
+            font-size: 28px;
+            text-align: center;
+        }
+
+        #pop1 {
+            top: 250px;
+            left: 600px;
+            position: fixed;
+            visibility: visible;
+        }
+
+        #pop2 {
+            top: 250px;
+            left: 600px;
+            position: fixed;
+            visibility: hidden;
+        }
+
+        #pop3 {
+            top: 250px;
+            left: 600px;
+            position: fixed;
+            visibility: hidden;
+        }
+
+        .imgClose {
+            height: 40px;
+            width: 40px;
+        }
+    </style>
+    <script src="./TETRIS_files/jquery.min.js.pobrane"></script>
+    <script>
+        var tabela = "";
+        var wym_X = 10;
+        var wym_Y = 18;
+        var tabTypy = ['i', 't', 'o', 'j', 'l', 's', 'z'];
+        var tabKolory = ['#330066', '#333399', '#3300ff', '#3366cc', '#000066', '#333366', '#003399'];
+
+        var stan = 1; // 1,2,3,4
+        var typ = "s";
+        var kolor = "red'";
+        var tab = [];
+        var pos = 0;
+        var time = 1000;
+        var punkty = 0;
+
+        var pos_y1 = 1;
+        var pos_y2 = 1;
+        var pos_y3 = 0;
+        var pos_y4 = 0;
+
+        var pos_x1 = 3;
+        var pos_x2 = 4;
+        var pos_x3 = 4;
+        var pos_x4 = 5;
+
+        var flaga_1 = 1;
+        var flaga_2 = 2;
+
+        var z = 0;
+        var gdzie = 4;
+        var z = 0;
+        var temp_1;
+        var temp_2;
+        var temp_3;
+
+
+        $(document).ready(function () {
+            $("#btStart").click(function () {
+                $("#pop1").css("visibility", "hidden");
+                flaga_2 = 1;
+            });
+        });
+
+
+        function pause() {
+            if (flaga_2 == 1) {
+                flaga_2 = 2;
+            } else {
+                flaga_2 = 1;
+            }
+        }
+
+        function ustawCookie() {
+            var dokiedy = new Date()
+            dokiedy.setTime(dokiedy.getTime() + 1000 * 60 * 60 * 2)
+            var expires = " ;" + dokiedy.getHours() + ":" + dokiedy.getMinutes() + ":" + dokiedy.getSeconds();
+
+            document.cookie = "wynik_1" + "=" + 0 + expires + "; path=/";
+            document.cookie = "wynik_2" + "=" + 0 + expires + "; path=/";
+            document.cookie = "wynik_3" + "=" + 0 + expires + "; path=/";
+        }
+
+        function pokazCookie() {
+
+            if (document.cookie != "") {
+                var cookies = document.cookie.split("; ");
+                i = 0;
+                var nazwaCookie = cookies[i].split("=")[0];
+                var wartoscCookie = cookies[i].split("=")[1];
+                temp_1 = unescape(wartoscCookie);
+                i = 1;
+                var nazwaCookie = cookies[i].split("=")[0];
+                var wartoscCookie = cookies[i].split("=")[1];
+                temp_2 = unescape(wartoscCookie);
+                i = 2;
+                var nazwaCookie = cookies[i].split("=")[0];
+                var wartoscCookie = cookies[i].split("=")[1];
+                temp_3 = unescape(wartoscCookie);
+                //alert(temp_3);
+
+                var dokiedy = new Date()
+                dokiedy.setTime(dokiedy.getTime() + 1000 * 60 * 60 * 2)
+                var expires = " ;" + dokiedy.getHours() + ":" + dokiedy.getMinutes() + ":" + dokiedy.getSeconds();
+
+                if (punkty > temp_1) {
+                    document.cookie = "wynik_1" + "=" + punkty + expires + "; path=/";
+                    document.cookie = "wynik_2" + "=" + temp_1 + expires + "; path=/";
+                    document.cookie = "wynik_3" + "=" + temp_2 + expires + "; path=/";
+                }
+                else if (punkty > temp_2) {
+                    document.cookie = "wynik_2" + "=" + punkty + expires + "; path=/";
+                    document.cookie = "wynik_3" + "=" + temp_2 + expires + "; path=/";
+                } else if (punkty > temp_3) {
+
+                    document.cookie = "wynik_3" + "=" + punkty + expires + "; path=/";
+                }
+
+            } else {
+                ustawCookie();
+            }
+        }
+
+        function rekordPopUp() {
+            var cookies = document.cookie.split("; ");
+            i = 0;
+            var nazwaCookie = cookies[i].split("=")[0];
+            var wartoscCookie = cookies[i].split("=")[1];
+            temp_1 = unescape(wartoscCookie);
+            i = 1;
+            var nazwaCookie = cookies[i].split("=")[0];
+            var wartoscCookie = cookies[i].split("=")[1];
+            temp_2 = unescape(wartoscCookie);
+            i = 2;
+            var nazwaCookie = cookies[i].split("=")[0];
+            var wartoscCookie = cookies[i].split("=")[1];
+            temp_3 = unescape(wartoscCookie);
+            document.getElementById("rekord_1").innerHTML = temp_1;
+            document.getElementById("rekord_2").innerHTML = temp_2;
+            document.getElementById("rekord_3").innerHTML = temp_3;
+        }
+
+
+        function losuj() {
+            var i;
+            i = Math.floor((Math.random() * 7));
+            stan = 1;
+            typ = tabTypy[i];
+            kolor = tabKolory[i];
+
+            if (typ == "s") {
+                pos_y1 = 1; pos_y2 = 1; pos_y3 = 0; pos_y4 = 0;
+                pos_x1 = 3; pos_x2 = 4; pos_x3 = 4; pos_x4 = 5;
+            }
+
+            else if (typ == "z") {
+                pos_y1 = 0; pos_y2 = 0; pos_y3 = 1; pos_y4 = 1;
+                pos_x1 = 3; pos_x2 = 4; pos_x3 = 4; pos_x4 = 5;
+            }
+            else if (typ == "i") {
+                pos_y1 = 0; pos_y2 = 0; pos_y3 = 0; pos_y4 = 0;
+                pos_x1 = 3; pos_x2 = 4; pos_x3 = 5; pos_x4 = 6;
+            }
+            else if (typ == "o") {
+                pos_y1 = 0; pos_y2 = 0; pos_y3 = 1; pos_y4 = 1;
+                pos_x1 = 4; pos_x2 = 5; pos_x3 = 4; pos_x4 = 5;
+            }
+            else if (typ == "t") {
+                pos_y1 = 0; pos_y2 = 1; pos_y3 = 1; pos_y4 = 2;
+                pos_x1 = 4; pos_x2 = 4; pos_x3 = 5; pos_x4 = 4;
+            }
+            else if (typ == "l") {
+                pos_y1 = 0; pos_y2 = 1; pos_y3 = 2; pos_y4 = 2;
+                pos_x1 = 4; pos_x2 = 4; pos_x3 = 4; pos_x4 = 5;
+            }
+            else if (typ == "j") {
+                pos_y1 = 0; pos_y2 = 1; pos_y3 = 2; pos_y4 = 2;
+                pos_x1 = 5; pos_x2 = 5; pos_x3 = 5; pos_x4 = 4;
+            }
+        }
+
+        function stworzTablice() {
+            //tab[1][1] = 1;
+            for (var i = 0; i < wym_X; i++) {
+                tab[i] = [];
+                for (var j = 0; j < wym_Y; j++) {
+
+                    tab[i][j] = 0;
+                }
+                //tab[i][j] = 0;
+            }
+
+        }///--------------------------------------------------------------------------stwórzTablice()     
+        function ustawTablice() {
+            //tab[1][1] = 1;
+            for (var i = 0; i < wym_X; i++) {
+                for (var j = 0; j < wym_Y; j++) {
+                    if (i == pos_x1 && j == pos_y1 || i == pos_x2 && j == pos_y2 ||
+                        i == pos_x3 && j == pos_y3 || i == pos_x4 && j == pos_y4) {
+                        tab[i][j] = 0;
+                    } else {
+                        if (tab[i][j] != 2)
+                            tab[i][j] = 0;
+                    }
+                    //tab[i][j] = 0;
+                }
+            }
+        }///--------------------------------------------------------------------------ustawTablice()
+
+        function generuj() {
+            //osuj();
+            ustawTablice();
+            var tym = '<table>';
+            for (var i = 0; i < wym_Y; i++) {
+                tym += "<tr>";
+                for (var j = 0; j < wym_X; j++) {
+                    tym += "<td id='x" + j + "y" + i + "'></td>"
+                }
+            }
+            tym += "</table>"
+            document.getElementById("gra").innerHTML += tym;
+        }
+
+
+        function poruszLewo() {
+            if (tab[pos_x1 - 1][pos_y1] == 0 &&
+                tab[pos_x2 - 1][pos_y2] == 0 &&
+                tab[pos_x3 - 1][pos_y3] == 0 &&
+                tab[pos_x4 - 1][pos_y4] == 0) {
+                pos_x1--;
+                pos_x2--;
+                pos_x3--;
+                pos_x4--;
+            }
+        }
+
+        function poruszPrawo() {
+            if (tab[pos_x1 + 1][pos_y1] == 0 &&
+                tab[pos_x2 + 1][pos_y2] == 0 &&
+                tab[pos_x3 + 1][pos_y3] == 0 &&
+                tab[pos_x4 + 1][pos_y4] == 0) {
+                pos_x1++;
+                pos_x2++;
+                pos_x3++;
+                pos_x4++;
+            }
+        }
+        function poruszDol() {
+            if (tab[pos_x1][pos_y1 + 1] == 0 &&
+                tab[pos_x2][pos_y2 + 1] == 0 &&
+                tab[pos_x3][pos_y3 + 1] == 0 &&
+                tab[pos_x4][pos_y4 + 1] == 0) {
+                pos_y1++;
+                pos_y2++;
+                pos_y3++;
+                pos_y4++;
+            }
+        }
+
+        function obroc() {
+            if (typ == "i") {//--------------------------------------------I
+
+                if (stan == 1) {
+                    if (tab[pos_x1][pos_y1 + 2] == 0 &&
+                        tab[pos_x2][pos_y2 + 2] == 0 &&
+                        tab[pos_x3][pos_y3 + 2] == 0 &&
+                        tab[pos_x4][pos_y4 + 2] == 0) {
+                        pos_x1++; pos_x1++; pos_x2++; pos_x4--;
+                        pos_y1--; pos_y1--; pos_y2--; pos_y4++;
+                        stan++; //=2
+                    }
+                }
+
+                else if (stan == 2) {
+                    pos_x1--; pos_x1--; pos_x2--; pos_x4++;
+                    pos_y1++; pos_y1++; pos_y2++; pos_y4--;
+                    stan--; //=1
+                }
+
+
+            }
+            if (typ == "t") {//-------------------------------------------T
+                if (stan == 1) {
+                    pos_x1++; pos_x3--; pos_x4--;
+                    pos_y1++; pos_y3++; pos_y4--;
+                    stan++; //=2
+                }
+
+                else if (stan == 2) {
+                    pos_x1--; pos_x3--; pos_x4++;
+                    pos_y1++; pos_y3--; pos_y4--;
+                    stan++; //=3
+                }
+                else if (stan == 3) {
+                    pos_x1--; pos_x3++; pos_x4++;
+                    pos_y1--; pos_y3--; pos_y4++;
+                    stan++; //=4
+                }
+
+                else if (stan == 4) {
+                    pos_x1++; pos_x3++; pos_x4--;
+                    pos_y1--; pos_y3++; pos_y4++;
+                    stan = 1; //=1
+                }
+            }
+            if (typ == "l") {//------------------------------------------L
+                if (stan == 1) {
+                    pos_x1++; pos_x1++; pos_x2++; pos_x4--;
+                    pos_y1++; pos_y3--;
+                    stan++; //=2
+                }
+
+                else if (stan == 2) {
+                    pos_x1--; pos_x3++;
+                    pos_y1++; pos_y1++; pos_y2++; pos_y4--;
+                    stan++; //=3
+
+                }
+                else if (stan == 3) {
+                    pos_x1--; pos_x3++; pos_x4++; pos_x4++;
+                    pos_y1--; pos_y3++;
+                    stan++; //=4
+                }
+
+                else if (stan == 4) {
+                    pos_x1++; pos_x3--;
+                    pos_y1--; pos_y1--; pos_y2--; pos_y4++;
+                    stan = 1; //=1
+                }
+            }
+            if (typ == "j") {//------------------------------------------J
+                if (stan == 1) {
+                    pos_x1++; pos_x3--;
+                    pos_y1++; pos_y1++; pos_y2++; pos_y4--;
+                    stan++; //=2
+                }
+
+                else if (stan == 2) {
+                    pos_x1--; pos_x1--; pos_x2--; pos_x4++;
+                    pos_y1++; pos_y3--;
+                    stan++; //=3
+
+                }
+                else if (stan == 3) {
+                    pos_x1--; pos_x3++;
+                    pos_y1--; pos_y1--; pos_y2--; pos_y4++;
+                    stan++; //=4
+                }
+
+                else if (stan == 4) {
+                    pos_x1++; pos_x1++; pos_x2++; pos_x4--;
+                    pos_y1--; pos_y3++;
+                    stan = 1; //=1
+                }
+            }
+            if (typ == "z") {//------------------------------------------Z
+                if (stan == 1) {
+                    pos_x1++; pos_x1++; pos_x2++; pos_x4--;
+                    pos_y2++; pos_y4++;
+                    stan++; //=2
+                }
+
+                else if (stan == 2) {
+                    pos_x1--; pos_x1--; pos_x2--; pos_x4++;
+                    pos_y2--; pos_y4--;
+                    stan--; //=1
+                }
+            }
+            if (typ == "s") {//------------------------------------------S
+                if (stan == 1) {
+                    pos_x1++; pos_x3--; pos_x4--; pos_x4--;
+                    pos_y1++; pos_y3++;
+                    stan++; //=2
+                }
+
+                else if (stan == 2) {
+                    pos_x1--; pos_x3++; pos_x4++; pos_x4++;
+                    pos_y1--; pos_y3--;
+                    stan--; //=1
+                }
+            }
+            if (typ == "o") {//------------------------------------------O
+                // nic nie rób
+            }
+        }
+
+
+
+
+        function koloruj() {
+            for (var i = 0; i < wym_Y + 2; i++) {
+                for (var j = 0; j < wym_X; j++) {
+                    //document.getElementById("x" + j + "y" + i + "").innerHTML = tab[j][i];
+                    if (tab[j][i] != 2) {
+                        $(document).ready(function () { $("#x" + j + "y" + i + "").css({ "background-color": "#cc3333" }); });
+                    }
+                }
+            }
+            // $(document).ready(function () { $("td").css({ "background-color": "blue" }); });
+            $(document).ready(function () { $("#x" + pos_x1 + "y" + pos_y1 + "").css({ "background-color": kolor }); });
+            $(document).ready(function () { $("#x" + pos_x2 + "y" + pos_y2 + "").css({ "background-color": kolor }); });
+            $(document).ready(function () { $("#x" + pos_x3 + "y" + pos_y3 + "").css({ "background-color": kolor }); });
+            $(document).ready(function () { $("#x" + pos_x4 + "y" + pos_y4 + "").css({ "background-color": kolor }); });
+            /*for (var i = 0; i < wym_Y + 2; i++) {
+                for (var j = 0; j < wym_X; j++) {
+                    document.getElementById("x" + j + "y" + i + "").innerHTML = tab[j][i];
+                }
+            }*/
+
+        }
+
+        function liczRzedy() { //to dac do intervala 
+            //losuj();
+
+        }
+
+        function czyscLinie() {
+            for (var i = 17; i > -1; i--) {
+                if (tab[0][i] == 2 &&
+                    tab[1][i] == 2 &&
+                    tab[2][i] == 2 &&
+                    tab[3][i] == 2 &&
+                    tab[4][i] == 2 &&
+                    tab[5][i] == 2 &&
+                    tab[6][i] == 2 &&
+                    tab[7][i] == 2) {
+                    for (var j = 0; j < wym_X; j++) {
+                        tab[j][i] = 0;
+                    }
+                    pom_1 = i;
+                    przesun();
+                    punkty++;
+                    document.getElementById("rzedy").innerHTML = punkty;
+
+                }
+            }
+        }
+        function zapiszRekord() {
+
+        }
+
+        function przegrana() {
+            for (var i = 0; i < wym_X; i++) {
+                if (tab[i][0] == 2) {
+                    //alert("przegrana");
+                    $("#pop2").css("visibility", "visible");
+                    flaga_2 = 2;
+                    zapiszRekord();
+                }
+            }
+        }
+
+        function przesun() {
+            for (var j = pom_1; j > -1; j--) {
+                for (var i = 0; i < wym_X; i++) {
+                    var tempC = "";
+                    var tempJ = j - 1;
+                    tempC = $("#x" + i + "y" + tempJ + "").css("background-color");
+                    $(document).ready(function () { $("#x" + i + "y" + j + "").css({ "background-color": tempC }); });
+                    tab[i][0] = 0;
+                    tab[i][j] = tab[i][j - 1];
+                }
+            }
+        }
+
+
+        function porusz() {
+            switch (z) {
+                case 37: //left
+                    poruszLewo();
+                    break;
+                case 39://right
+                    poruszPrawo();
+                    break;
+                case 38://obroc
+                    obroc();
+                    break;
+                case 40://w dół
+                    poruszDol()
+                    break;
+            }
+        }
+
+        function key(e) {
+            z = e.which;
+            porusz();
+        }
+        function wDol() {
+            if (flaga_2 == 1) {
+                if (tab[pos_x1][pos_y1 + 1] == 0 &&
+                    tab[pos_x2][pos_y2 + 1] == 0 &&
+                    tab[pos_x3][pos_y3 + 1] == 0 &&
+                    tab[pos_x4][pos_y4 + 1] == 0) {
+                    pos_y1++;
+                    pos_y2++;
+                    pos_y3++;
+                    pos_y4++;
+                    ustawTablice();
+                    //czyscLinie();
+                } else {
+                    tab[pos_x1][pos_y1] = 2;
+                    tab[pos_x2][pos_y2] = 2;
+                    tab[pos_x3][pos_y3] = 2;
+                    tab[pos_x4][pos_y4] = 2;
+                    przegrana();
+                    losuj()
+                }
+            }
+        }
+
+        function glowna() {
+            if (flaga_2 == 1) {
+                koloruj();
+                liczRzedy();
+                czyscLinie();
+                //przegrana();
+            }
+        }
+
+        function interval_2() {
+            setInterval("glowna()", 1);
+        }
+        function interval_1() {
+            setInterval("wDol()", 500);
+        }
+
+
+        function startuj() {
+            pokazCookie();
+            stworzTablice();
+            losuj();
+            generuj();
+            interval_1();
+            interval_2();
+        }
+
+        $(document).ready(function () {
+            $("#rekordBt").click(function () {
+                rekordPopUp();
+                $("#pop3").css("visibility", "visible");
+            });
+        });
+
+        $(document).ready(function () {
+            $("#close_3").click(function () {
+                $("#pop3").css("visibility", "hidden");
+            });
+        });
+        $(document).ready(function () {
+            $("#close_2").click(function () {
+                $("#pop2").css("visibility", "hidden");
+            });
+        });
+        $(document).ready(function () {
+            $("#zakoncz").click(function () {
+                pokazCookie();
+                rekordPopUp();
+                $("#pop2").css("visibility", "visible");
+                flaga_2 = 2;
+            });
+        });
+
+    </script>
+</head>
+
+<body onload="startuj()" onkeydown="key(event)">
+    <div id="content">
+        <div id="header">
+            <span style="font-size: 60px">Tetris</span>
+            <br>
+            <span style="font-size: 20px">by Michał Domagała</span>
+            <img id="img1" src="./TETRIS_files/tetris1.png">
+        </div>
+        <div id="gra"><table><tbody><tr><td id="x0y0" style="background-color: rgb(204, 51, 51);"></td><td id="x1y0" style="background-color: rgb(204, 51, 51);"></td><td id="x2y0" style="background-color: rgb(204, 51, 51);"></td><td id="x3y0" style="background-color: rgb(204, 51, 51);"></td><td id="x4y0" style="background-color: rgb(204, 51, 51);"></td><td id="x5y0" style="background-color: rgb(204, 51, 51);"></td><td id="x6y0" style="background-color: rgb(204, 51, 51);"></td><td id="x7y0" style="background-color: rgb(204, 51, 51);"></td><td id="x8y0" style="background-color: rgb(204, 51, 51);"></td><td id="x9y0" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y1" style="background-color: rgb(204, 51, 51);"></td><td id="x1y1" style="background-color: rgb(204, 51, 51);"></td><td id="x2y1" style="background-color: rgb(204, 51, 51);"></td><td id="x3y1" style="background-color: rgb(204, 51, 51);"></td><td id="x4y1" style="background-color: rgb(204, 51, 51);"></td><td id="x5y1" style="background-color: rgb(204, 51, 51);"></td><td id="x6y1" style="background-color: rgb(204, 51, 51);"></td><td id="x7y1" style="background-color: rgb(204, 51, 51);"></td><td id="x8y1" style="background-color: rgb(204, 51, 51);"></td><td id="x9y1" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y2" style="background-color: rgb(204, 51, 51);"></td><td id="x1y2" style="background-color: rgb(204, 51, 51);"></td><td id="x2y2" style="background-color: rgb(204, 51, 51);"></td><td id="x3y2" style="background-color: rgb(204, 51, 51);"></td><td id="x4y2" style="background-color: rgb(204, 51, 51);"></td><td id="x5y2" style="background-color: rgb(204, 51, 51);"></td><td id="x6y2" style="background-color: rgb(204, 51, 51);"></td><td id="x7y2" style="background-color: rgb(204, 51, 51);"></td><td id="x8y2" style="background-color: rgb(204, 51, 51);"></td><td id="x9y2" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y3" style="background-color: rgb(204, 51, 51);"></td><td id="x1y3" style="background-color: rgb(204, 51, 51);"></td><td id="x2y3" style="background-color: rgb(204, 51, 51);"></td><td id="x3y3" style="background-color: rgb(204, 51, 51);"></td><td id="x4y3" style="background-color: rgb(204, 51, 51);"></td><td id="x5y3" style="background-color: rgb(204, 51, 51);"></td><td id="x6y3" style="background-color: rgb(204, 51, 51);"></td><td id="x7y3" style="background-color: rgb(204, 51, 51);"></td><td id="x8y3" style="background-color: rgb(204, 51, 51);"></td><td id="x9y3" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y4" style="background-color: rgb(204, 51, 51);"></td><td id="x1y4" style="background-color: rgb(204, 51, 51);"></td><td id="x2y4" style="background-color: rgb(204, 51, 51);"></td><td id="x3y4" style="background-color: rgb(204, 51, 51);"></td><td id="x4y4" style="background-color: rgb(204, 51, 51);"></td><td id="x5y4" style="background-color: rgb(204, 51, 51);"></td><td id="x6y4" style="background-color: rgb(204, 51, 51);"></td><td id="x7y4" style="background-color: rgb(204, 51, 51);"></td><td id="x8y4" style="background-color: rgb(204, 51, 51);"></td><td id="x9y4" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y5" style="background-color: rgb(204, 51, 51);"></td><td id="x1y5" style="background-color: rgb(204, 51, 51);"></td><td id="x2y5" style="background-color: rgb(204, 51, 51);"></td><td id="x3y5" style="background-color: rgb(204, 51, 51);"></td><td id="x4y5" style="background-color: rgb(204, 51, 51);"></td><td id="x5y5" style="background-color: rgb(204, 51, 51);"></td><td id="x6y5" style="background-color: rgb(204, 51, 51);"></td><td id="x7y5" style="background-color: rgb(204, 51, 51);"></td><td id="x8y5" style="background-color: rgb(204, 51, 51);"></td><td id="x9y5" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y6" style="background-color: rgb(204, 51, 51);"></td><td id="x1y6" style="background-color: rgb(204, 51, 51);"></td><td id="x2y6" style="background-color: rgb(204, 51, 51);"></td><td id="x3y6" style="background-color: rgb(204, 51, 51);"></td><td id="x4y6" style="background-color: rgb(204, 51, 51);"></td><td id="x5y6" style="background-color: rgb(204, 51, 51);"></td><td id="x6y6" style="background-color: rgb(204, 51, 51);"></td><td id="x7y6" style="background-color: rgb(204, 51, 51);"></td><td id="x8y6" style="background-color: rgb(204, 51, 51);"></td><td id="x9y6" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y7" style="background-color: rgb(204, 51, 51);"></td><td id="x1y7" style="background-color: rgb(204, 51, 51);"></td><td id="x2y7" style="background-color: rgb(204, 51, 51);"></td><td id="x3y7" style="background-color: rgb(204, 51, 51);"></td><td id="x4y7" style="background-color: rgb(204, 51, 51);"></td><td id="x5y7" style="background-color: rgb(204, 51, 51);"></td><td id="x6y7" style="background-color: rgb(204, 51, 51);"></td><td id="x7y7" style="background-color: rgb(204, 51, 51);"></td><td id="x8y7" style="background-color: rgb(204, 51, 51);"></td><td id="x9y7" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y8" style="background-color: rgb(204, 51, 51);"></td><td id="x1y8" style="background-color: rgb(204, 51, 51);"></td><td id="x2y8" style="background-color: rgb(204, 51, 51);"></td><td id="x3y8" style="background-color: rgb(204, 51, 51);"></td><td id="x4y8" style="background-color: rgb(204, 51, 51);"></td><td id="x5y8" style="background-color: rgb(204, 51, 51);"></td><td id="x6y8" style="background-color: rgb(204, 51, 51);"></td><td id="x7y8" style="background-color: rgb(204, 51, 51);"></td><td id="x8y8" style="background-color: rgb(204, 51, 51);"></td><td id="x9y8" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y9" style="background-color: rgb(204, 51, 51);"></td><td id="x1y9" style="background-color: rgb(204, 51, 51);"></td><td id="x2y9" style="background-color: rgb(204, 51, 51);"></td><td id="x3y9" style="background-color: rgb(204, 51, 51);"></td><td id="x4y9" style="background-color: rgb(204, 51, 51);"></td><td id="x5y9" style="background-color: rgb(204, 51, 51);"></td><td id="x6y9" style="background-color: rgb(204, 51, 51);"></td><td id="x7y9" style="background-color: rgb(204, 51, 51);"></td><td id="x8y9" style="background-color: rgb(204, 51, 51);"></td><td id="x9y9" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y10" style="background-color: rgb(204, 51, 51);"></td><td id="x1y10" style="background-color: rgb(204, 51, 51);"></td><td id="x2y10" style="background-color: rgb(204, 51, 51);"></td><td id="x3y10" style="background-color: rgb(204, 51, 51);"></td><td id="x4y10" style="background-color: rgb(204, 51, 51);"></td><td id="x5y10" style="background-color: rgb(204, 51, 51);"></td><td id="x6y10" style="background-color: rgb(204, 51, 51);"></td><td id="x7y10" style="background-color: rgb(204, 51, 51);"></td><td id="x8y10" style="background-color: rgb(204, 51, 51);"></td><td id="x9y10" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y11" style="background-color: rgb(204, 51, 51);"></td><td id="x1y11" style="background-color: rgb(204, 51, 51);"></td><td id="x2y11" style="background-color: rgb(204, 51, 51);"></td><td id="x3y11" style="background-color: rgb(204, 51, 51);"></td><td id="x4y11" style="background-color: rgb(204, 51, 51);"></td><td id="x5y11" style="background-color: rgb(204, 51, 51);"></td><td id="x6y11" style="background-color: rgb(204, 51, 51);"></td><td id="x7y11" style="background-color: rgb(204, 51, 51);"></td><td id="x8y11" style="background-color: rgb(204, 51, 51);"></td><td id="x9y11" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y12" style="background-color: rgb(204, 51, 51);"></td><td id="x1y12" style="background-color: rgb(204, 51, 51);"></td><td id="x2y12" style="background-color: rgb(204, 51, 51);"></td><td id="x3y12" style="background-color: rgb(204, 51, 51);"></td><td id="x4y12" style="background-color: rgb(204, 51, 51);"></td><td id="x5y12" style="background-color: rgb(204, 51, 51);"></td><td id="x6y12" style="background-color: rgb(204, 51, 51);"></td><td id="x7y12" style="background-color: rgb(204, 51, 51);"></td><td id="x8y12" style="background-color: rgb(204, 51, 51);"></td><td id="x9y12" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y13" style="background-color: rgb(204, 51, 51);"></td><td id="x1y13" style="background-color: rgb(204, 51, 51);"></td><td id="x2y13" style="background-color: rgb(204, 51, 51);"></td><td id="x3y13" style="background-color: rgb(204, 51, 51);"></td><td id="x4y13" style="background-color: rgb(204, 51, 51);"></td><td id="x5y13" style="background-color: rgb(51, 102, 204);"></td><td id="x6y13" style="background-color: rgb(204, 51, 51);"></td><td id="x7y13" style="background-color: rgb(204, 51, 51);"></td><td id="x8y13" style="background-color: rgb(204, 51, 51);"></td><td id="x9y13" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y14" style="background-color: rgb(204, 51, 51);"></td><td id="x1y14" style="background-color: rgb(204, 51, 51);"></td><td id="x2y14" style="background-color: rgb(204, 51, 51);"></td><td id="x3y14" style="background-color: rgb(204, 51, 51);"></td><td id="x4y14" style="background-color: rgb(204, 51, 51);"></td><td id="x5y14" style="background-color: rgb(51, 102, 204);"></td><td id="x6y14" style="background-color: rgb(204, 51, 51);"></td><td id="x7y14" style="background-color: rgb(204, 51, 51);"></td><td id="x8y14" style="background-color: rgb(204, 51, 51);"></td><td id="x9y14" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y15" style="background-color: rgb(204, 51, 51);"></td><td id="x1y15" style="background-color: rgb(204, 51, 51);"></td><td id="x2y15" style="background-color: rgb(204, 51, 51);"></td><td id="x3y15" style="background-color: rgb(204, 51, 51);"></td><td id="x4y15" style="background-color: rgb(51, 102, 204);"></td><td id="x5y15" style="background-color: rgb(51, 102, 204);"></td><td id="x6y15" style="background-color: rgb(204, 51, 51);"></td><td id="x7y15" style="background-color: rgb(204, 51, 51);"></td><td id="x8y15" style="background-color: rgb(204, 51, 51);"></td><td id="x9y15" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y16" style="background-color: rgb(204, 51, 51);"></td><td id="x1y16" style="background-color: rgb(204, 51, 51);"></td><td id="x2y16" style="background-color: rgb(204, 51, 51);"></td><td id="x3y16" style="background-color: rgb(204, 51, 51);"></td><td id="x4y16" style="background-color: rgb(204, 51, 51);"></td><td id="x5y16" style="background-color: rgb(204, 51, 51);"></td><td id="x6y16" style="background-color: rgb(204, 51, 51);"></td><td id="x7y16" style="background-color: rgb(204, 51, 51);"></td><td id="x8y16" style="background-color: rgb(204, 51, 51);"></td><td id="x9y16" style="background-color: rgb(204, 51, 51);"></td></tr><tr><td id="x0y17" style="background-color: rgb(204, 51, 51);"></td><td id="x1y17" style="background-color: rgb(204, 51, 51);"></td><td id="x2y17" style="background-color: rgb(204, 51, 51);"></td><td id="x3y17" style="background-color: rgb(204, 51, 51);"></td><td id="x4y17" style="background-color: rgb(204, 51, 51);"></td><td id="x5y17" style="background-color: rgb(204, 51, 51);"></td><td id="x6y17" style="background-color: rgb(204, 51, 51);"></td><td id="x7y17" style="background-color: rgb(204, 51, 51);"></td><td id="x8y17" style="background-color: rgb(204, 51, 51);"></td><td id="x9y17" style="background-color: rgb(204, 51, 51);"></td></tr></tbody></table></div>
+        <div id="menu">
+
+            <span id="licznik">
+                <span>Punkty: </span>
+                <span id="rzedy">0</span>
+            </span>
+            <br>
+            <br>
+            <button id="pause" onclick="pause()">Zatrzymaj grę.</button>
+            <br>
+            <button id="rekordBt">Wyświetl rekordy.</button>
+            <br>
+            <button id="zakoncz">Zapisz wynik i zakoncz grę.</button>
+        </div>
+
+
+    </div>
+    <!--                                                    PopUpy    -->
+    <div id="pop1" class="popup" style="visibility: hidden;">
+        <div class="sp1"></div>
+        <div class="sp2">
+            <br>
+            <span>Rozpocznij grę: </span>
+            <br>
+            <button id="btStart">Start.</button>
+        </div>
+
+    </div>
+    <div id="pop2" class="popup">
+        <div class="sp1">
+            <img id="close_2" class="imgClose" src="./TETRIS_files/close.png">
+        </div>
+        <div class="sp2">
+            <br>
+            <br>
+            <span>Koniec gry.</span>
+
+        </div>
+
+    </div>
+
+    <div id="pop3" class="popup">
+        <div class="sp1">
+            <img id="close_3" class="imgClose" src="./TETRIS_files/close.png">
+        </div>
+        <div class="sp2">
+            <span>Rekordy:</span><br>
+            1. <span id="rekord_1">000</span><br>
+            2. <span id="rekord_2">000</span><br>
+            3. <span id="rekord_3">000</span><br>
+
+        </div>
+
+    </div>
+    <!--                                                    PopUpy    -->
+
+
+</body></html>
